@@ -6,7 +6,7 @@ use ethabi::{decode, encode, ethereum_types::U256, ParamType, Token};
 use rand_chacha::{rand_core::SeedableRng, ChaChaRng};
 use std::fs::{read_to_string, write};
 use zshuffle::{
-    build_cs::{prove_shuffle, verify_shuffle},
+    build_cs::prove_shuffle,
     gen_params::{gen_shuffle_prover_params, params::refresh_prover_params_public_key},
     MaskedCard,
 };

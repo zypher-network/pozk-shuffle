@@ -1,0 +1,17 @@
+[package]
+name = "pozk-shuffle"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+uzkge = { version = "0.1", features = ["shuffle"] }
+zshuffle = "0.1"
+ethabi = "18.0"
+rand_chacha = "0.3"
+hex = "0.4"
+
+ark-ec = { version = "0.4", package = "ark-ec-zypher" }
+ark-ff = { version = "0.4", features = ["asm"], package = "ark-ff-zypher" }
+ark-serialize = { version = "0.4", features = ["derive"], package = "ark-serialize-zypher" }
+ark-bn254 = { version = "0.4", features = ["curve"], package = "ark-bn254-zypher" }
+ark-ed-on-bn254 = { version = "0.4", package = "ark-ed-on-bn254-zypher" }

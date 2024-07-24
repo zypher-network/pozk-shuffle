@@ -75,6 +75,7 @@ fn main() {
     let input_decks = input_decks_token.into_array().unwrap();
     assert_eq!(input_decks.len() % 4, 0);
     for item in input_decks.chunks(4) {
+        // e2, e1
         let e2 = parse_tokens_to_point(&item[0], &item[1]);
         let e1 = parse_tokens_to_point(&item[2], &item[3]);
         cards.push(MaskedCard { e1, e2 });
@@ -101,10 +102,11 @@ fn main() {
         let (x1, y1) = parse_point_to_tokens(nc.e1);
         let (x2, y2) = parse_point_to_tokens(nc.e2);
 
-        new_cards_token.push(x1);
-        new_cards_token.push(y1);
+        // e2, e1
         new_cards_token.push(x2);
         new_cards_token.push(y2);
+        new_cards_token.push(x1);
+        new_cards_token.push(y1);
     }
 
     let output_bytes = encode(&[Token::Array(pkc_token), Token::Array(new_cards_token)]);

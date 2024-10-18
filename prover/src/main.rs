@@ -4,7 +4,6 @@ use ark_ff::{BigInteger, PrimeField};
 use ark_serialize::{CanonicalDeserialize, Compress, Validate};
 use ethabi::{decode, encode, ethereum_types::U256, ParamType, Token};
 use rand_chacha::{rand_core::SeedableRng, ChaChaRng};
-use std::fs::{read_to_string, write};
 use zshuffle::{
     build_cs::prove_shuffle,
     gen_params::{gen_shuffle_prover_params, params::refresh_prover_params_public_key},
@@ -38,22 +37,29 @@ fn parse_point_to_tokens<F: PrimeField, G: CurveGroup<BaseField = F>>(p: G) -> (
     (Token::Uint(x), Token::Uint(y))
 }
 
-fn main() {
-    // read input & output & proof env
+/// INPUT=http://localhost:9098/tasks/1 cargo run --release
+#[tokio::main]
+async fn main() {
     let input_path = std::env::var("INPUT").expect("env INPUT missing");
-    let output_path = std::env::var("OUTPUT").expect("env OUTPUT missing");
-    let proof_path = std::env::var("PROOF").expect("env PROOF missing");
+    let bytes = reqwest::get(&input_path)
+        .await
+        .unwrap()
+        .bytes()
+        .await
+        .unwrap();
 
-    let input_string = read_to_string(input_path).expect("Unable to read file");
-    let input_string2 = input_string.trim_start_matches("0x");
-    let input_bytes = hex::decode(input_string2).expect("Unable decode hex inputs");
+    // parse inputs
+    let mut input_len_bytes = [0u8; 4];
+    input_len_bytes.copy_from_slice(&bytes[0..4]);
+    let input_len = u32::from_be_bytes(input_len_bytes) as usize;
+    let input_bytes = &bytes[4..input_len + 4];
 
     let mut input_tokens = decode(
         &[
             ParamType::Uint(256),
             ParamType::Array(Box::new(ParamType::Uint(256))),
         ],
-        &input_bytes,
+        input_bytes,
     )
     .expect("Unable decode inputs");
     let input_decks_token = input_tokens.pop().unwrap();
@@ -109,11 +115,12 @@ fn main() {
         new_cards_token.push(y1);
     }
 
-    let output_bytes = encode(&[Token::Array(pkc_token), Token::Array(new_cards_token)]);
-    let output_string = format!("0x{}", hex::encode(output_bytes));
-    write(output_path, output_string).expect("Unable to create output file");
+    let bytes = encode(&[
+        Token::Array(pkc_token),
+        Token::Array(new_cards_token),
+        Token::Bytes(proof.to_bytes_be()),
+    ]);
 
-    let proof_bytes = proof.to_bytes_be();
-    let proof_string = format!("0x{}", hex::encode(proof_bytes));
-    write(proof_path, proof_string).expect("Unable to create proof file");
+    let client = reqwest::Client::new();
+    client.post(&input_path).body(bytes).send().await.unwrap();
 }

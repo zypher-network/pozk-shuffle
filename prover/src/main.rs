@@ -48,22 +48,23 @@ async fn main() {
         .await
         .unwrap();
 
-    // parse inputs
+    // parse inputs & publics
     let mut input_len_bytes = [0u8; 4];
     input_len_bytes.copy_from_slice(&bytes[0..4]);
     let input_len = u32::from_be_bytes(input_len_bytes) as usize;
     let input_bytes = &bytes[4..input_len + 4];
+    let publics_bytes = &bytes[input_len + 4..];
 
-    let mut input_tokens = decode(
-        &[
-            ParamType::Uint(256),
-            ParamType::Array(Box::new(ParamType::Uint(256))),
-        ],
-        input_bytes,
+    let mut input_tokens =
+        decode(&[ParamType::Uint(256)], input_bytes).expect("Unable decode inputs");
+    let mut publics_tokens = decode(
+        &[ParamType::Array(Box::new(ParamType::Uint(256)))],
+        publics_bytes,
     )
-    .expect("Unable decode inputs");
-    let input_decks_token = input_tokens.pop().unwrap();
+    .expect("Unable decode publics");
+
     let input_joint_token = input_tokens.pop().unwrap();
+    let input_decks_token = publics_tokens.pop().unwrap(); // use publics as inputs deck
 
     let mut joint_bytes = [0u8; 32];
     input_joint_token
@@ -94,15 +95,6 @@ async fn main() {
     let mut prng = ChaChaRng::from_entropy();
     let (proof, new_cards) = prove_shuffle(&mut prng, &joint_pk, &cards, &params).unwrap();
 
-    // serialize new_cards & proof to file
-    let mut pkc_token = vec![];
-    for p in pkc {
-        let (x, y) = parse_point_to_tokens(p);
-
-        pkc_token.push(x);
-        pkc_token.push(y);
-    }
-
     let mut new_cards_token = vec![];
     for nc in new_cards {
         let (x1, y1) = parse_point_to_tokens(nc.e1);
@@ -115,11 +107,22 @@ async fn main() {
         new_cards_token.push(y1);
     }
 
+    // serialize new_cards & proof to file
+    let mut pkc_token = vec![];
+    for p in pkc {
+        let (x, y) = parse_point_to_tokens(p);
+
+        pkc_token.push(x);
+        pkc_token.push(y);
+    }
+
     let bytes = encode(&[
-        Token::Array(pkc_token),
         Token::Array(new_cards_token),
+        Token::Array(pkc_token),
         Token::Bytes(proof.to_bytes_be()),
     ]);
+
+    // println!("proof: 0x{}", hex::encode(&bytes));
 
     let client = reqwest::Client::new();
     client.post(&input_path).body(bytes).send().await.unwrap();

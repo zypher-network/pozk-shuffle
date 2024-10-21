@@ -21,6 +21,9 @@ fn parse_point_to_tokens<F: PrimeField, G: CurveGroup<BaseField = F>>(p: G) -> (
     (Token::Uint(x), Token::Uint(y))
 }
 
+/// cargo run --example mock-input
+/// python3 -m http.server 8000
+/// INPUT=http://localhost:8000/test_inputs cargo run --release
 fn main() {
     let mut prng = ChaChaRng::from_entropy();
 
@@ -34,7 +37,7 @@ fn main() {
     let joint_pk_token = Token::Uint(U256::from_big_endian(&joint_pk_bytes));
 
     let mut new_cards_token = vec![];
-    for _ in 0..52 {
+    for _ in 0..20 {
         let point = EdwardsProjective::rand(&mut prng);
         let (nc, _) = mask(&mut prng, &joint_pk, &point, &Fr::one()).unwrap();
 
@@ -49,7 +52,18 @@ fn main() {
     }
 
     // encode
-    let bytes = encode(&[joint_pk_token, Token::Array(new_cards_token)]);
-    let content = format!("0x{}", hex::encode(&bytes));
-    write("./test_inputs", content).unwrap();
+    // let bytes = encode(&[joint_pk_token, Token::Array(new_cards_token)]);
+
+    let inputs_bytes = encode(&[joint_pk_token]);
+    let publics_bytes = encode(&[Token::Array(new_cards_token)]);
+
+    println!("inputs: 0x{}", hex::encode(&inputs_bytes));
+    println!("publics: 0x{}", hex::encode(&publics_bytes));
+
+    let mut bytes = (inputs_bytes.len() as u32).to_be_bytes().to_vec();
+    bytes.extend(inputs_bytes);
+    bytes.extend(publics_bytes);
+
+    // let content = format!("0x{}", hex::encode(&bytes));
+    write("./test_inputs", bytes).unwrap();
 }

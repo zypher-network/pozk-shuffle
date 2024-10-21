@@ -17,6 +17,11 @@ contract Shuffle52 is OwnableUpgradeable, ERC165, IVerifier, ShuffleVerifier {
         _verifyKey = VerifierKey_52.load;
     }
 
+    function update(address _vk1, address _vk2) external onlyOwner {
+        _extraVk1 = _vk1;
+        _extraVk2 = _vk2;
+    }
+
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
         return interfaceId == type(IVerifier).interfaceId || super.supportsInterface(interfaceId);
     }
@@ -39,7 +44,7 @@ contract Shuffle52 is OwnableUpgradeable, ERC165, IVerifier, ShuffleVerifier {
 
     function verify(bytes calldata _publics, bytes calldata _proof) external view returns (bool) {
         uint[] memory deck1 = abi.decode(_publics, (uint[]));
-        (uint[] memory pkc, uint[] memory deck2, bytes memory proof) = abi.decode(_proof, (uint[], uint[], bytes));
+        (uint[] memory deck2, uint[] memory pkc, bytes memory proof) = abi.decode(_proof, (uint[], uint[], bytes));
 
         uint256 deckLength = DECK_NUM * 4;
         require(deck1.length == deckLength, "SS01");

@@ -7,15 +7,20 @@
 const { ethers, upgrades, network } = require("hardhat");
 const { attachContract, sleep } = require("./address_utils.js");
 
-async function update_player_limit() {
-  const game = await attachContract("SimpleGame");
-  await game.setPlayerLimit(3);
-  const limit = await game.playerLimit();
-  console.log(`Player Limit: ${limit}`);
+async function test() {
+  const C = await ethers.getContractFactory("Shuffle20");
+  const c = await C.attach("0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6");
+
+  const res = await c.verify(
+    "",
+    ""
+  );
+
+  console.log(`Verify: ${res}`);
 }
 
 async function main() {
-  await update_player_limit();
+  await test();
 }
 
 // We recommend this pattern to be able to use async/await everywhere

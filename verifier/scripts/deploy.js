@@ -31,8 +31,8 @@ async function deploy() {
   const shuffle20 = await deployContract("Shuffle20", [vk20_1, vk20_2]);
   const shuffle52 = await deployContract("Shuffle52", [vk52_1, vk52_2]);
 
-  // 0x07c428F2557d214d5062a002b4E3369479c46BAb
-  // 0xc1f088B2afa2f7E725502c6691FA03567d752bD0
+  // 0x07c428f2557d214d5062a002b4e3369479c46bab
+  // 0xc1f088b2afa2f7e725502c6691fa03567d752bd0
 }
 
 async function main() {

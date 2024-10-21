@@ -27,7 +27,7 @@ contract Shuffle20 is OwnableUpgradeable, ERC165, IVerifier, ShuffleVerifier {
     }
 
     function name() external pure returns (string memory) {
-        return "zk-shuffle";
+        return "zk-shuffle-20";
     }
 
     /// show how to serialize/deseriaze the inputs params

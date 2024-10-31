@@ -37,7 +37,7 @@ fn main() {
     let joint_pk_token = Token::Uint(U256::from_big_endian(&joint_pk_bytes));
 
     let mut new_cards_token = vec![];
-    for _ in 0..20 {
+    for _ in 0..52 {
         let point = EdwardsProjective::rand(&mut prng);
         let (nc, _) = mask(&mut prng, &joint_pk, &point, &Fr::one()).unwrap();
 
@@ -57,8 +57,11 @@ fn main() {
     let inputs_bytes = encode(&[joint_pk_token]);
     let publics_bytes = encode(&[Token::Array(new_cards_token)]);
 
-    println!("inputs: 0x{}", hex::encode(&inputs_bytes));
-    println!("publics: 0x{}", hex::encode(&publics_bytes));
+    let inputs_str = format!("0x{}", hex::encode(&inputs_bytes));
+    let publics_str = format!("0x{}", hex::encode(&publics_bytes));
+
+    println!("inputs: {}", inputs_str);
+    println!("publics: {}", publics_str);
 
     let mut bytes = (inputs_bytes.len() as u32).to_be_bytes().to_vec();
     bytes.extend(inputs_bytes);
@@ -66,4 +69,5 @@ fn main() {
 
     // let content = format!("0x{}", hex::encode(&bytes));
     write("./test_inputs", bytes).unwrap();
+    write("./test_miner", format!("{}\n{}", inputs_str, publics_str)).unwrap();
 }

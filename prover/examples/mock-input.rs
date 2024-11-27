@@ -7,6 +7,8 @@ use rand_chacha::{rand_core::SeedableRng, ChaChaRng};
 use std::fs::write;
 use zshuffle::{keygen::Keypair, mask::mask};
 
+const NUM: usize = 52;
+
 #[inline]
 fn parse_point_to_tokens<F: PrimeField, G: CurveGroup<BaseField = F>>(p: G) -> (Token, Token) {
     let affine = G::Affine::from(p);
@@ -37,7 +39,7 @@ fn main() {
     let joint_pk_token = Token::Uint(U256::from_big_endian(&joint_pk_bytes));
 
     let mut new_cards_token = vec![];
-    for _ in 0..52 {
+    for _ in 0..NUM {
         let point = EdwardsProjective::rand(&mut prng);
         let (nc, _) = mask(&mut prng, &joint_pk, &point, &Fr::one()).unwrap();
 
@@ -60,14 +62,11 @@ fn main() {
     let inputs_str = format!("0x{}", hex::encode(&inputs_bytes));
     let publics_str = format!("0x{}", hex::encode(&publics_bytes));
 
-    println!("inputs: {}", inputs_str);
-    println!("publics: {}", publics_str);
-
     let mut bytes = (inputs_bytes.len() as u32).to_be_bytes().to_vec();
     bytes.extend(inputs_bytes);
     bytes.extend(publics_bytes);
 
     // let content = format!("0x{}", hex::encode(&bytes));
-    write("./test_inputs", bytes).unwrap();
-    write("./test_miner", format!("{}\n{}", inputs_str, publics_str)).unwrap();
+    write(format!("./test_inputs_{NUM}"), bytes).unwrap();
+    write(format!("./test_miner_{NUM}"), format!("{}\n{}", inputs_str, publics_str)).unwrap();
 }

@@ -7,15 +7,27 @@
 const { ethers, upgrades, network } = require("hardhat");
 const { writeFile } = require('fs');
 
-// Testnet (opbnbtestnet)
-const VK20_1 = "0x84f5c475C007B7C5DdE950859dFb02D89846bBa3";
-const VK20_2 = "0x38324d3C3246cb10f2703E3f5f3EB464F7410FEd";
-const VK52_1 = "0x94bDb200D517b910C143D04C8c755DF1E8ef3765";
-const VK52_2 = "0x768FC3aeb339f160D7a298c1716b25B4289058aD";
-// Shuffle20Verifier address: 0xf629F33047943c2321B6444b74Eb0d30857AEb8b
-// Shuffle52Verifier address: 0x25C4e8A3b33A503Ed31C3b698717D183FefA919B
-const SHUFFLE_20 = "0x6708d16d1197b4a68df93a27C785208dE7819e1E";
-const SHUFFLE_50 = "0x3e7E24fEC0F9c6cE2cA63a1A4D829FF5FDfa3423";
+// testnet
+const VK20_1 = "0xDd3c0D61E7A654Ff5Dc4Ade5AD5c47cB4b5e69C2";
+const VK20_2 = "0xCF53b1D6EF8D2e70b66c90369724c71Ee444d43c";
+const VK52_1 = "0xD342fF2844C4E2bB365FC91BD9dD61C15a26f0fD";
+const VK52_2 = "0xDeb08b8247b866ff05856ce4883Dcd23F5E35adA";
+const VERIFIER20 = "0x33682F75895E986546A09D60F7ef5Ee6a53383d8";
+const VERIFIER52 = "0xCFB2AC0013d3bDD186A21BABf8c170b5b560e58d";
+const SHUFFLE20 = "0x0eACA2011742C5156f217F1B1d0784Fe5fBf2428";
+const SHUFFLE52 = "0xa6B720EE1f8975551A94F2d6bea74978AFf60343";
+
+// l2testnet
+// const VK20_1 = "0xCF53b1D6EF8D2e70b66c90369724c71Ee444d43c";
+// const VK20_2 = "0xD342fF2844C4E2bB365FC91BD9dD61C15a26f0fD";
+// const VK52_1 = "0xDeb08b8247b866ff05856ce4883Dcd23F5E35adA";
+// const VK52_2 = "0x33682F75895E986546A09D60F7ef5Ee6a53383d8";
+// const VERIFIER20 = "0xCFB2AC0013d3bDD186A21BABf8c170b5b560e58d";
+// const VERIFIER52 = "0x17c3Aef40495c2fcC9bc1880AeAAAf455fDfA5bE";
+// const SHUFFLE20 = "0xa6B720EE1f8975551A94F2d6bea74978AFf60343";
+// const SHUFFLE50 = "0xbC9b4e9d43830f747e65873A5e122DDd9C9d769b";
+
+// mainnet
 
 async function deployContract(name, params=[]) {
   const Factory = await ethers.getContractFactory(name);
@@ -53,14 +65,14 @@ async function upgrade() {
   console.log(`Shuffle20 upgrading`);
   const shuffle20Verifier = await deployContract("Shuffle20Verifier", [VK20_1, VK20_2]);
   const C1 = await ethers.getContractFactory("Shuffle20");
-  const prover1 = await C1.attach(SHUFFLE_20);
+  const prover1 = await C1.attach(SHUFFLE20);
   await prover1.setVerifier(shuffle20Verifier);
   console.log(`Shuffle20 upgraded`);
 
   console.log(`Shuffle52 upgrading`);
   const shuffle52Verifier = await deployContract("Shuffle52Verifier", [VK52_1, VK52_2]);
   const C2 = await ethers.getContractFactory("Shuffle52");
-  const prover2 = await C2.attach(SHUFFLE_50);
+  const prover2 = await C2.attach(SHUFFLE50);
   await prover2.setVerifier(shuffle52Verifier);
   console.log(`Shuffle52 upgraded`);
 }

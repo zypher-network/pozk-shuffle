@@ -72,14 +72,14 @@ async function upgrade() {
   console.log(`Shuffle52 upgrading`);
   const shuffle52Verifier = await deployContract("Shuffle52Verifier", [VK52_1, VK52_2]);
   const C2 = await ethers.getContractFactory("Shuffle52");
-  const prover2 = await C2.attach(SHUFFLE50);
+  const prover2 = await C2.attach(SHUFFLE52);
   await prover2.setVerifier(shuffle52Verifier);
   console.log(`Shuffle52 upgraded`);
 }
 
 async function main() {
-  await deploy();
-  // await upgrade();
+  // await deploy();
+  await upgrade();
 }
 
 // We recommend this pattern to be able to use async/await everywhere

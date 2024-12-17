@@ -46,6 +46,10 @@ contract Shuffle52Verifier is OwnableUpgradeable, ERC165, IVerifier, ShuffleVeri
         return "uint256[], (uint256[], uint256[])";
     }
 
+    function types() external pure returns (string memory) {
+        return "zk";
+    }
+
     function verify(bytes calldata _publics, bytes calldata _proof) external view returns (bool) {
         uint[] memory deck1 = abi.decode(_publics, (uint[]));
         (uint[] memory deck2, uint[] memory pkc, bytes memory proof) = abi.decode(_proof, (uint[], uint[], bytes));

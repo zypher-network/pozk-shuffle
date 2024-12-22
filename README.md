@@ -2,7 +2,7 @@
 Universal shuffle mining prover
 
 
-## Input
+## Inputs
 `uint256` join_pk (aggregate_keys)
 
 ## Publics

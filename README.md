@@ -1,6 +1,12 @@
 # pozk-shuffle
 Universal shuffle mining prover
 
+- PoZK testnet prover 20: `0x0eACA2011742C5156f217F1B1d0784Fe5fBf2428`
+- PoZK testnet prover 52: `0xa6B720EE1f8975551A94F2d6bea74978AFf60343`
+
+- PoZK mainnet prover 20: `Coming soon`
+- PoZK mainnet prover 52: `Coming soon`
+
 ## Serialize (ABI encode/decode)
 - Inputs (bytes)
 ```
